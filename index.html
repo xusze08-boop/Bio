@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a18">
+<title>Zexus | Bio</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+  html{
+    background:#0a0a18;
+    overscroll-behavior-y:contain;
+    height:100%;width:100%;
+  }
+
+  body{
+    font-family:'Poppins',sans-serif;
+    width:100%;
+    min-height:100vh;
+    min-height:100dvh;
+    background:#0a0a18;
+    overflow-x:hidden;
+    overflow-y:auto;
+    overscroll-behavior-y:contain;
+    -webkit-overflow-scrolling:touch;
+
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:flex-start;
+
+    padding:24px 18px 40px;
+    padding-top:calc(24px + env(safe-area-inset-top));
+    padding-bottom:calc(40px + env(safe-area-inset-bottom));
+    padding-left:calc(18px + env(safe-area-inset-left));
+    padding-right:calc(18px + env(safe-area-inset-right));
+    position:relative;
+  }
+
+  .bg-layer{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:linear-gradient(-45deg,#0a0a18,#161235,#1e1a3d,#0f0d26);
+    background-size:400% 400%;
+    animation:bgMove 16s ease infinite;
+  }
+  @keyframes bgMove{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
+
+  .bg-glow{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(circle at 15% 15%,rgba(99,102,241,.16),transparent 42%),
+      radial-gradient(circle at 85% 85%,rgba(168,85,247,.14),transparent 42%);
+  }
+
+  #snow{
+    position:fixed;inset:0;
+    width:100%;height:100%;
+    pointer-events:none;z-index:1;
+  }
+
+  /* ===== BẢNG THÔNG BÁO - GIỮA MÀN HÌNH ===== */
+  .notif-panel{
+    position:fixed;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%) scale(.85);
+    z-index:1000;
+    width:calc(100% - 32px);
+    max-width:380px;
+    max-height:78vh;
+    border-radius:22px;
+    background:linear-gradient(165deg,rgba(36,31,72,.98),rgba(18,16,42,.99));
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:
+      0 30px 80px rgba(0,0,0,.8),
+      0 0 60px rgba(139,92,246,.28),
+      inset 0 1px 0 rgba(255,255,255,.1);
+    backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+    overflow:hidden;
+    opacity:0;visibility:hidden;
+    transition:transform .55s cubic-bezier(.2,.9,.3,1.08),
+               opacity .45s ease,visibility .45s;
+    pointer-events:none;
+  }
+  .notif-panel.show{
+    transform:translate(-50%,-50%) scale(1);
+    opacity:1;visibility:visible;
+    pointer-events:auto;
+  }
+  .notif-panel.hide{
+    transform:translate(-50%,-50%) scale(.85);
+    opacity:0;visibility:hidden;
+    pointer-events:none;
+  }
+
+  .notif-panel::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,#6366f1,#a855f7,#ec4899,#6366f1);
+    background-size:300% 100%;
+    animation:shine 3.5s linear infinite;
+  }
+  @keyframes shine{
+    0%{background-position:0% 50%}
+    100%{background-position:300% 50%}
+  }
+
+  .notif-backdrop{
+    position:fixed;inset:0;
+    background:rgba(6,5,18,.55);
+    backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+    z-index:999;
+    opacity:0;visibility:hidden;
+    transition:opacity .4s ease,visibility .4s;
+    pointer-events:none;
+  }
+  .notif-backdrop.show{opacity:1;visibility:visible;pointer-events:auto}
+
+  .notif-header{
+    display:flex;align-items:center;gap:10px;
+    padding:18px 16px 14px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    position:relative;
+  }
+  .notif-header-icon{
+    width:38px;height:38px;border-radius:11px;
+    background:linear-gradient(135deg,#6366f1,#a855f7);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    box-shadow:0 4px 16px rgba(139,92,246,.5);
+  }
+  .notif-header-icon svg{width:20px;height:20px;fill:#fff}
+  .notif-header-title{font-size:15px;font-weight:600;color:#fff;letter-spacing:.2px}
+  .notif-header-sub{font-size:11px;color:rgba(255,255,255,.45);font-weight:300;margin-top:1px}
+  .notif-header-actions{margin-left:auto;display:flex;gap:6px}
+
+  .notif-clear{
+    padding:7px 12px;border-radius:10px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.06);
+    color:rgba(255,255,255,.75);
+    font-family:'Poppins',sans-serif;
+    font-size:11px;font-weight:500;
+    cursor:pointer;transition:all .3s;
+    white-space:nowrap;
+    display:flex;align-items:center;gap:5px;
+  }
+  .notif-clear:hover{background:rgba(255,255,255,.14);color:#fff}
+  .notif-clear:active{transform:scale(.95)}
+  .notif-clear svg{width:12px;height:12px;fill:currentColor}
+
+  .notif-close{
+    width:32px;height:32px;border-radius:50%;border:none;
+    background:rgba(255,255,255,.06);
+    color:rgba(255,255,255,.6);
+    font-size:18px;line-height:1;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .3s;flex-shrink:0;
+  }
+  .notif-close:hover{background:rgba(236,72,153,.3);color:#fff;transform:rotate(90deg)}
+
+  .notif-list{
+    max-height:calc(78vh - 80px);
+    overflow-y:auto;padding:12px;
+    display:flex;flex-direction:column;gap:9px;
+  }
+  .notif-list::-webkit-scrollbar{width:4px}
+  .notif-list::-webkit-scrollbar-thumb{background:rgba(139,92,246,.4);border-radius:4px}
+
+  .notif-item{
+    position:relative;
+    display:flex;align-items:flex-start;gap:12px;
+    padding:13px 12px 13px 14px;
+    border-radius:14px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    opacity:0;transform:translateY(-10px);
+    animation:notifIn .5s cubic-bezier(.2,.9,.3,1.05) forwards;
+    transition:background .3s,border-color .3s;
+  }
+  .notif-item:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.15)}
+  @keyframes notifIn{to{opacity:1;transform:translateY(0)}}
+  .notif-item.removing{animation:notifOut .35s ease forwards}
+  @keyframes notifOut{
+    to{opacity:0;transform:translateX(20px);max-height:0;padding-top:0;padding-bottom:0;margin-bottom:-9px}
+  }
+
+  .notif-item-icon{
+    width:38px;height:38px;border-radius:11px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.3);
+  }
+  .notif-item-icon svg{width:19px;height:19px;fill:#fff}
+  .notif-item-icon.i-welcome{background:linear-gradient(135deg,#6366f1,#a855f7)}
+  .notif-item-icon.i-update{background:linear-gradient(135deg,#f59e0b,#ec4899)}
+  .notif-item-icon.i-key{background:linear-gradient(135deg,#10b981,#06b6d4)}
+
+  .notif-item-body{flex:1;min-width:0;text-align:left}
+  .notif-item-title{
+    font-size:13.5px;font-weight:600;color:#fff;
+    margin-bottom:3px;letter-spacing:.2px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .notif-item-time{font-size:10px;color:rgba(255,255,255,.35);font-weight:400;margin-left:auto}
+  .notif-item-desc{font-size:12px;font-weight:300;color:rgba(255,255,255,.65);line-height:1.5}
+  .notif-item-desc b{color:#a5b4fc;font-weight:600}
+
+  .notif-item-close{
+    flex-shrink:0;width:24px;height:24px;
+    border:none;border-radius:50%;
+    background:rgba(255,255,255,.05);
+    color:rgba(255,255,255,.4);
+    font-size:14px;line-height:1;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .3s;margin-top:2px;
+  }
+  .notif-item-close:hover{background:rgba(236,72,153,.3);color:#fff;transform:rotate(90deg) scale(1.1)}
+
+  .notif-empty{
+    padding:30px 16px;text-align:center;
+    color:rgba(255,255,255,.35);
+    font-size:12.5px;font-weight:300;
+    display:none;
+  }
+  .notif-empty.show{display:block}
+  .notif-empty svg{width:40px;height:40px;fill:rgba(255,255,255,.15);margin-bottom:10px}
+
+  /* Nút chuông */
+  .notif-bell{
+    position:fixed;
+    top:calc(16px + env(safe-area-inset-top));
+    right:16px;z-index:998;
+    width:46px;height:46px;border-radius:50%;
+    border:1px solid rgba(255,255,255,.12);
+    background:linear-gradient(165deg,rgba(36,31,72,.95),rgba(18,16,42,.97));
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    box-shadow:0 8px 24px rgba(0,0,0,.5),0 0 24px rgba(139,92,246,.3);
+    transition:all .35s cubic-bezier(.2,.8,.2,1);
+  }
+  .notif-bell:hover{transform:scale(1.08);box-shadow:0 10px 30px rgba(139,92,246,.55)}
+  .notif-bell:active{transform:scale(.94)}
+  .notif-bell svg{width:21px;height:21px;fill:#fff}
+  .notif-bell .badge{
+    position:absolute;top:-2px;right:-2px;
+    min-width:18px;height:18px;padding:0 5px;
+    border-radius:9px;
+    background:linear-gradient(135deg,#ec4899,#f43f5e);
+    color:#fff;font-size:10px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    border:2px solid #12102b;
+    box-shadow:0 3px 10px rgba(236,72,153,.6);
+    animation:badgePulse 2s ease-in-out infinite;
+  }
+  @keyframes badgePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+  .notif-bell .badge.hide{display:none}
+
+  /* ===== BIO ===== */
+  .bio-wrap{
+    position:relative;z-index:2;
+    width:100%;max-width:400px;
+    opacity:0;
+    transform:translateY(34px) scale(.96);
+    transition:opacity .7s cubic-bezier(.2,.8,.2,1),transform .7s cubic-bezier(.2,.8,.2,1);
+    will-change:opacity,transform;
+    margin-top:auto;margin-bottom:auto;
+  }
+  .bio-wrap.open{opacity:1;transform:translateY(0) scale(1)}
+  .bio-wrap.closed{opacity:0;transform:translateY(24px) scale(.94);pointer-events:none}
+
+  .card{
+    position:relative;width:100%;
+    padding:38px 24px 30px;
+    border-radius:26px;
+    background:rgba(20,18,45,.6);
+    backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+    border:1px solid rgba(255,255,255,.09);
+    box-shadow:
+      0 20px 55px rgba(0,0,0,.55),
+      0 0 40px rgba(99,102,241,.08),
+      inset 0 1px 0 rgba(255,255,255,.07);
+    text-align:center;
+  }
+
+  .avatar-wrap{position:relative;width:112px;height:112px;margin:0 auto 18px}
+  .avatar-wrap::before{
+    content:'';position:absolute;inset:-4px;border-radius:50%;
+    background:conic-gradient(from 0deg,#6366f1,#a855f7,#ec4899,#6366f1);
+    animation:spin 5s linear infinite;
+    filter:blur(1px);opacity:.9;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .avatar{
+    position:relative;width:100%;height:100%;border-radius:50%;
+    object-fit:cover;border:3px solid #12102b;
+    z-index:1;display:block;
+  }
+
+  .name{font-size:24px;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:6px}
+  .name span{
+    background:linear-gradient(90deg,#818cf8,#c084fc,#f472b6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .subtitle{font-size:12.5px;color:rgba(255,255,255,.45);font-weight:300;margin-bottom:26px;letter-spacing:.5px}
+
+  .links{display:flex;flex-direction:column;gap:12px}
+
+  .btn{
+    position:relative;display:flex;align-items:center;gap:14px;
+    padding:15px 18px;border-radius:15px;text-decoration:none;color:#fff;
+    font-weight:600;font-size:15px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    transition:all .3s cubic-bezier(.2,.8,.2,1);
+    overflow:hidden;cursor:pointer;
+    font-family:'Poppins',sans-serif;width:100%;
+  }
+  .btn::before{
+    content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+    transition:left .6s;
+  }
+  .btn:hover::before{left:100%}
+  .btn:hover{transform:translateY(-2px) scale(1.012);border-color:rgba(255,255,255,.2);box-shadow:0 8px 24px rgba(0,0,0,.35)}
+  .btn:active{transform:scale(.97)}
+
+  .btn i{
+    width:38px;height:38px;display:flex;align-items:center;justify-content:center;
+    border-radius:11px;flex-shrink:0;
+  }
+  .btn i svg{width:20px;height:20px;fill:#fff}
+  .btn .arrow{margin-left:auto;opacity:.35;transition:all .3s;font-size:16px}
+  .btn:hover .arrow{opacity:1;transform:translateX(4px)}
+
+  .btn-tiktok i{background:linear-gradient(135deg,#1f1f2e,#2a2a3d);border:1px solid rgba(37,244,238,.3)}
+  .btn-tiktok i svg{fill:#25F4EE}
+  .btn-tiktok:hover{border-color:rgba(37,244,238,.4);box-shadow:0 8px 24px rgba(37,244,238,.18)}
+
+  .btn-zalo i{background:linear-gradient(135deg,#1f1f2e,#2a2a3d);border:1px solid rgba(0,166,255,.3)}
+  .btn-zalo i svg{fill:#00A6FF}
+  .btn-zalo:hover{border-color:rgba(0,166,255,.4);box-shadow:0 8px 24px rgba(0,166,255,.18)}
+
+  .btn-download{
+    background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(168,85,247,.12));
+    border-color:rgba(139,92,246,.35);
+  }
+  .btn-download i{background:linear-gradient(135deg,#6366f1,#a855f7)}
+  .btn-download:hover{border-color:rgba(168,85,247,.55);box-shadow:0 8px 26px rgba(139,92,246,.32)}
+
+  .btn-key{
+    background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(6,182,212,.12));
+    border-color:rgba(16,185,129,.35);
+  }
+  .btn-key i{background:linear-gradient(135deg,#10b981,#06b6d4)}
+  .btn-key:hover{border-color:rgba(16,185,129,.55);box-shadow:0 8px 26px rgba(16,185,129,.3)}
+
+  .footer{margin-top:24px;font-size:11px;color:rgba(255,255,255,.25);letter-spacing:.8px}
+
+  .pulse{
+    position:absolute;inset:0;border-radius:15px;
+    border:2px solid rgba(139,92,246,.4);
+    animation:pulse 2.2s ease-out infinite;
+    pointer-events:none;
+  }
+  @keyframes pulse{
+    0%{transform:scale(1);opacity:.6}
+    100%{transform:scale(1.05);opacity:0}
+  }
+
+  /* ===== POPUP TẢI APP ===== */
+  .overlay{
+    position:fixed;inset:0;
+    background:rgba(6,5,18,.8);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;z-index:1100;
+    opacity:0;visibility:hidden;
+    transition:opacity .35s ease,visibility .35s;
+  }
+  .overlay.show{opacity:1;visibility:visible}
+
+  .popup{
+    position:relative;width:100%;max-width:350px;
+    padding:0 0 24px;border-radius:24px;
+    background:linear-gradient(165deg,rgba(30,26,61,.98),rgba(15,13,38,.99));
+    border:1px solid rgba(255,255,255,.1);
+    box-shadow:
+      0 30px 80px rgba(0,0,0,.75),
+      0 0 55px rgba(139,92,246,.2),
+      inset 0 1px 0 rgba(255,255,255,.08);
+    text-align:center;overflow:hidden;
+    transform:translateY(30px) scale(.88);
+    opacity:0;
+    transition:transform .45s cubic-bezier(.2,.9,.25,1.05),opacity .45s;
+  }
+  .overlay.show .popup{transform:translateY(0) scale(1);opacity:1}
+
+  .popup::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,#6366f1,#a855f7,#ec4899,#6366f1);
+    background-size:300% 100%;
+    animation:shine 3.5s linear infinite;
+  }
+
+  .popup-glow{
+    position:absolute;top:-40px;left:50%;transform:translateX(-50%);
+    width:200px;height:200px;border-radius:50%;
+    background:radial-gradient(circle,rgba(168,85,247,.3),transparent 65%);
+    pointer-events:none;
+    animation:glowPulse 3s ease-in-out infinite;
+  }
+  @keyframes glowPulse{
+    0%,100%{opacity:.5;transform:translateX(-50%) scale(1)}
+    50%{opacity:.9;transform:translateX(-50%) scale(1.12)}
+  }
+
+  .popup-icon{
+    position:relative;width:80px;height:80px;margin:28px auto 16px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#6366f1,#a855f7);
+    box-shadow:0 0 0 8px rgba(139,92,246,.1),0 12px 32px rgba(139,92,246,.45);
+    animation:iconPop .7s cubic-bezier(.2,.9,.3,1.3) both;
+  }
+  @keyframes iconPop{
+    0%{transform:scale(0) rotate(-90deg);opacity:0}
+    60%{transform:scale(1.12) rotate(8deg);opacity:1}
+    100%{transform:scale(1) rotate(0)}
+  }
+  .popup-icon::after{
+    content:'';position:absolute;inset:-6px;border-radius:50%;
+    border:2px solid rgba(168,85,247,.4);
+    animation:ringPulse 2s ease-out infinite;
+  }
+  @keyframes ringPulse{
+    0%{transform:scale(1);opacity:.7}
+    100%{transform:scale(1.35);opacity:0}
+  }
+  .popup-icon svg{width:40px;height:40px;fill:#fff}
+
+  .popup h3{
+    color:#fff;font-size:18px;font-weight:700;
+    margin-bottom:12px;letter-spacing:.3px;
+    padding:0 24px;animation:fadeInUp .5s .15s both;
+  }
+  .popup h3 span{
+    background:linear-gradient(90deg,#818cf8,#f472b6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  @keyframes fadeInUp{
+    from{opacity:0;transform:translateY(10px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  .popup p{
+    color:rgba(255,255,255,.7);
+    font-size:13px;font-weight:300;
+    line-height:1.65;padding:0 26px;margin-bottom:22px;
+    animation:fadeInUp .5s .25s both;
+  }
+  .popup p b{color:#a5b4fc;font-weight:600}
+  .popup p .hl{color:#f0abfc;font-weight:500}
+
+  .popup-actions{
+    display:flex;gap:10px;padding:0 26px;
+    animation:fadeInUp .5s .35s both;
+  }
+
+  .popup-btn{
+    position:relative;flex:1;
+    padding:13px 10px;border-radius:14px;border:none;
+    font-family:'Poppins',sans-serif;
+    font-weight:600;font-size:13.5px;
+    cursor:pointer;overflow:hidden;
+    transition:all .3s;white-space:nowrap;
+  }
+
+  .btn-continue{
+    background:linear-gradient(135deg,#6366f1,#a855f7);
+    background-size:200% 100%;color:#fff;
+    box-shadow:0 10px 28px rgba(139,92,246,.45);
+  }
+  .btn-continue:hover{
+    background-position:100% 0;transform:translateY(-2px);
+    box-shadow:0 14px 34px rgba(139,92,246,.65);
+  }
+  .btn-continue:active{transform:scale(.97)}
+
+  .btn-ok{
+    background:rgba(255,255,255,.06);
+    color:rgba(255,255,255,.8);
+    border:1px solid rgba(255,255,255,.12);
+  }
+  .btn-ok:hover{background:rgba(255,255,255,.12);color:#fff;transform:translateY(-2px)}
+  .btn-ok:active{transform:scale(.97)}
+
+  .popup-close{
+    position:absolute;top:14px;right:14px;
+    width:32px;height:32px;border-radius:50%;border:none;
+    background:rgba(255,255,255,.06);
+    color:rgba(255,255,255,.55);
+    font-size:19px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .3s;line-height:1;z-index:3;
+  }
+  .popup-close:hover{background:rgba(168,85,247,.3);color:#fff;transform:rotate(90deg)}
+
+  .hearts{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:24px}
+  .heart{
+    position:absolute;bottom:-20px;font-size:14px;opacity:0;
+    animation:floatUp 3.5s ease-in infinite;
+  }
+  @keyframes floatUp{
+    0%{transform:translateY(0) scale(.6);opacity:0}
+    20%{opacity:.85}
+    100%{transform:translateY(-320px) scale(1.1) rotate(20deg);opacity:0}
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="bg-glow"></div>
+<canvas id="snow"></canvas>
+
+<div class="notif-backdrop" id="notifBackdrop"></div>
+
+<!-- Nút chuông luôn hiện -->
+<button class="notif-bell" id="notifBell" aria-label="Thông báo">
+  <svg viewBox="0 0 24 24"><path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2zm6-6V11a6 6 0 0 0-5-5.91V4a1 1 0 1 0-2 0v1.09A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+  <span class="badge" id="notifBadge">3</span>
+</button>
+
+<!-- BẢNG THÔNG BÁO - mặc định ẩn (class hide) -->
+<div class="notif-panel hide" id="notifPanel">
+  <div class="notif-header">
+    <div class="notif-header-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2zm6-6V11a6 6 0 0 0-5-5.91V4a1 1 0 1 0-2 0v1.09A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+    </div>
+    <div>
+      <div class="notif-header-title">Thông báo</div>
+      <div class="notif-header-sub" id="notifCount">Bạn có 3 thông báo</div>
+    </div>
+    <div class="notif-header-actions">
+      <button class="notif-clear" id="notifClear" title="Tắt tất cả">
+        <svg viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        Tắt tất cả
+      </button>
+      <button class="notif-close" id="notifClose" aria-label="Đóng bảng">×</button>
+    </div>
+  </div>
+
+  <div class="notif-list" id="notifList">
+    <div class="notif-item" data-id="welcome" style="animation-delay:.1s">
+      <div class="notif-item-icon i-welcome">
+        <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z"/></svg>
+      </div>
+      <div class="notif-item-body">
+        <div class="notif-item-title">👋 Chào mừng bạn!<span class="notif-item-time">Vừa xong</span></div>
+        <div class="notif-item-desc">Cảm ơn bạn đã ghé thăm bio của <b>Zexus</b>. Chúc bạn một ngày tốt lành!</div>
+      </div>
+      <button class="notif-item-close" aria-label="Tắt">×</button>
+    </div>
+
+    <div class="notif-item" data-id="update" style="animation-delay:.25s">
+      <div class="notif-item-icon i-update">
+        <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg>
+      </div>
+      <div class="notif-item-body">
+        <div class="notif-item-title">🔄 Cập nhật mới!<span class="notif-item-time">Vừa xong</span></div>
+        <div class="notif-item-desc">App đang được cải thiện để hỗ trợ <b>Android</b>. Sẽ sớm ra mắt, mong bạn thông cảm!</div>
+      </div>
+      <button class="notif-item-close" aria-label="Tắt">×</button>
+    </div>
+
+    <div class="notif-item" data-id="key" style="animation-delay:.4s">
+      <div class="notif-item-icon i-key">
+        <svg viewBox="0 0 24 24"><path d="M12.65 10a6 6 0 1 0 0 4H17v4h4v-4h-1.35a6 6 0 0 0-7-4zM7 14a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>
+      </div>
+      <div class="notif-item-body">
+        <div class="notif-item-title">🔑 Lấy Key miễn phí!<span class="notif-item-time">Vừa xong</span></div>
+        <div class="notif-item-desc">Bấm nút <b>Lấy Key</b> bên dưới bio để nhận key kích hoạt app.</div>
+      </div>
+      <button class="notif-item-close" aria-label="Tắt">×</button>
+    </div>
+  </div>
+
+  <div class="notif-empty" id="notifEmpty">
+    <svg viewBox="0 0 24 24"><path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2zm6-6V11a6 6 0 0 0-5-5.91V4a1 1 0 1 0-2 0v1.09A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+    <div>Không có thông báo nào</div>
+  </div>
+</div>
+
+<div class="bio-wrap" id="bioWrap">
+  <div class="card">
+    <div class="avatar-wrap">
+      <img class="avatar" src="https://i.imgur.com/Bexw0s9.jpeg" alt="Avatar">
+    </div>
+
+    <div class="name">Ze<span>xus</span></div>
+    <div class="subtitle">✦ Kết nối với mình ✦</div>
+
+    <div class="links">
+      <a class="btn btn-tiktok" href="https://www.tiktok.com/@hnq3107?_r=1&_t=ZS-9A6KiCBDu9m" target="_blank" rel="noopener">
+        <i><svg viewBox="0 0 24 24"><path d="M12.9 2h3.2c.2 1.7 1.2 3.2 2.7 4 .9.5 1.9.8 3 .8v3.2c-1.9 0-3.7-.6-5.2-1.7v6.9c0 3.9-3.2 7.1-7.1 7.1S2.4 19.1 2.4 15.2 5.6 8.1 9.5 8.1c.4 0 .8 0 1.2.1v3.3c-.4-.1-.8-.2-1.2-.2-2.1 0-3.8 1.7-3.8 3.8s1.7 3.8 3.8 3.8 3.8-1.7 3.8-3.8V2z"/></svg></i>
+        TikTok <span class="arrow">→</span>
+      </a>
+
+      <a class="btn btn-zalo" href="https://zalo.me/84862504623" target="_blank" rel="noopener">
+        <i><svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 5.9 2 10.7c0 2.7 1.5 5.1 3.8 6.7-.2 1-.8 2.5-1.6 3.5-.2.3 0 .7.4.6 1.9-.5 3.4-1.4 4.3-2 .9.2 2 .3 3.1.3 5.5 0 10-3.9 10-8.7S17.5 2 12 2zm-4 7.5h2.5c.3 0 .5.2.5.5s-.2.5-.5.5H8c-.3 0-.5-.2-.5-.5V7c0-.3.2-.5.5-.5s.5.2.5.5v2.5zm3.5.5c-.3 0-.5-.2-.5-.5V7c0-.3.2-.5.5-.5s.5.2.5.5v2.5c0 .3-.2.5-.5.5zm4 0c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg></i>
+        Zalo <span class="arrow">→</span>
+      </a>
+
+      <button class="btn btn-download" id="btnDownload">
+        <span class="pulse"></span>
+        <i><svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg></i>
+        Tải Ứng Dụng <span class="arrow">→</span>
+      </button>
+
+      <a class="btn btn-key" href="https://link4m.net/TG2fBy" target="_blank" rel="noopener">
+        <i><svg viewBox="0 0 24 24"><path d="M12.65 10a6 6 0 1 0 0 4H17v4h4v-4h-1.35a6 6 0 0 0-7-4zM7 14a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg></i>
+        Lấy Key <span class="arrow">→</span>
+      </a>
+    </div>
+
+    <div class="footer">© 2026 ZEXUS</div>
+  </div>
+</div>
+
+<!-- POPUP TẢI APP -->
+<div class="overlay" id="overlay">
+  <div class="popup">
+    <div class="popup-glow"></div>
+    <div class="hearts" id="hearts"></div>
+    <button class="popup-close" id="popupClose" aria-label="Đóng">×</button>
+
+    <div class="popup-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+    </div>
+
+    <h3>Xin lỗi <span>mọi người</span> 🙏</h3>
+    <p>
+      App hiện <b>chưa hỗ trợ Android</b>,<br>
+      mình sẽ sớm cập nhật và cải thiện<br>
+      trong thời gian tới.<br>
+      <span class="hl">Cảm ơn bạn đã quan tâm!</span> ❤️
+    </p>
+
+    <div class="popup-actions">
+      <button class="popup-btn btn-ok" id="popupOk">Đã hiểu</button>
+      <button class="popup-btn btn-continue" id="popupContinue">Tiếp tục →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ===== TUYẾT RƠI ===== */
+  const canvas = document.getElementById('snow');
+  const ctx = canvas.getContext('2d');
+  let w, h, flakes = [];
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  function resize(){
+    w = window.innerWidth; h = window.innerHeight;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    canvas.width  = w * dpr;
+    canvas.height = h * dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const count = Math.min(90, Math.floor(w * h / 18000));
+    flakes = [];
+    for (let i = 0; i < count; i++) flakes.push(newFlake(true));
+  }
+
+  function newFlake(spread){
+    return {
+      x: Math.random() * w,
+      y: spread ? Math.random() * h : -10,
+      r: Math.random() * 1.4 + 0.4,
+      s: Math.random() * 0.4 + 0.2,
+      drift: Math.random() * 0.4 - 0.2,
+      a: Math.random() * 0.4 + 0.3,
+      phase: Math.random() * Math.PI * 2
+    };
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for (let i = 0; i < flakes.length; i++){
+      const f = flakes[i];
+      f.phase += 0.01;
+      f.y += f.s;
+      f.x += f.drift + Math.sin(f.phase) * 0.2;
+      if (f.y > h + 5 || f.x < -10 || f.x > w + 10){
+        flakes[i] = newFlake(false); continue;
+      }
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,' + f.a + ')';
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize(); draw();
+
+  /* ===== BẢNG THÔNG BÁO ===== */
+  const notifPanel = document.getElementById('notifPanel');
+  const notifBackdrop = document.getElementById('notifBackdrop');
+  const notifBell  = document.getElementById('notifBell');
+  const notifBadge = document.getElementById('notifBadge');
+  const notifCount = document.getElementById('notifCount');
+  const notifClear = document.getElementById('notifClear');
+  const notifClose = document.getElementById('notifClose');
+  const notifList  = document.getElementById('notifList');
+  const notifEmpty = document.getElementById('notifEmpty');
+
+  function updateNotifCount(){
+    const items = notifList.querySelectorAll('.notif-item:not(.removing)');
+    const n = items.length;
+    notifCount.textContent = n > 0 ? 'Bạn có ' + n + ' thông báo' : 'Không có thông báo mới';
+    if (n > 0){
+      notifBadge.textContent = n;
+      notifBadge.classList.remove('hide');
+    } else {
+      notifBadge.classList.add('hide');
+      notifEmpty.classList.add('show');
+    }
+  }
+
+  function openPanel(){
+    notifPanel.classList.remove('hide');
+    notifPanel.classList.add('show');
+    notifBackdrop.classList.add('show');
+  }
+  function closePanel(){
+    notifPanel.classList.remove('show');
+    notifPanel.classList.add('hide');
+    notifBackdrop.classList.remove('show');
+  }
+
+  // Bấm chuông → mở bảng
+  notifBell.addEventListener('click', openPanel);
+
+  notifClose.addEventListener('click', closePanel);
+  notifBackdrop.addEventListener('click', closePanel);
+
+  notifClear.addEventListener('click', function(){
+    const items = notifList.querySelectorAll('.notif-item:not(.removing)');
+    if (items.length === 0) return;
+    items.forEach(function(item, idx){
+      setTimeout(function(){
+        item.classList.add('removing');
+        setTimeout(function(){
+          item.remove();
+          updateNotifCount();
+        }, 350);
+      }, idx * 70);
+    });
+    setTimeout(function(){
+      notifBadge.classList.add('hide');
+      notifEmpty.classList.add('show');
+    }, items.length * 70 + 400);
+  });
+
+  notifList.addEventListener('click', function(e){
+    const btn = e.target.closest('.notif-item-close');
+    if (!btn) return;
+    const item = btn.closest('.notif-item');
+    item.classList.add('removing');
+    setTimeout(function(){
+      item.remove();
+      updateNotifCount();
+    }, 350);
+  });
+
+  // Cập nhật số lượng ban đầu (không tự mở bảng)
+  updateNotifCount();
+
+  /* ===== HIỆN BIO ===== */
+  const bioWrap = document.getElementById('bioWrap');
+  window.addEventListener('load', function(){
+    setTimeout(function(){ bioWrap.classList.add('open'); }, 60);
+  });
+  setTimeout(function(){ bioWrap.classList.add('open'); }, 250);
+
+  /* ===== POPUP TẢI APP ===== */
+  const overlay = document.getElementById('overlay');
+  const btnDownload = document.getElementById('btnDownload');
+  const popupClose = document.getElementById('popupClose');
+  const popupOk = document.getElementById('popupOk');
+  const popupContinue = document.getElementById('popupContinue');
+  const heartsBox = document.getElementById('hearts');
+  const LINK_TIEP_TUC = "https://link4m.org/zxtrY";
+
+  function spawnHearts(){
+    heartsBox.innerHTML = '';
+    const emojis = ['❤️','💖','💗','💓','💕'];
+    for (let i = 0; i < 7; i++){
+      const h = document.createElement('div');
+      h.className = 'heart';
+      h.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      h.style.left = (Math.random()*80 + 10) + '%';
+      h.style.animationDelay = (Math.random()*2.5) + 's';
+      h.style.fontSize = (Math.random()*8 + 12) + 'px';
+      heartsBox.appendChild(h);
+    }
+  }
+
+  function openPopup(){
+    bioWrap.classList.remove('open');
+    bioWrap.classList.add('closed');
+    overlay.classList.add('show');
+    spawnHearts();
+  }
+  function closePopup(){
+    overlay.classList.remove('show');
+    setTimeout(function(){
+      bioWrap.classList.remove('closed');
+      bioWrap.classList.add('open');
+    }, 150);
+  }
+
+  btnDownload.addEventListener('click', function(e){ e.preventDefault(); openPopup(); });
+  popupClose.addEventListener('click', closePopup);
+  popupOk.addEventListener('click', closePopup);
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) closePopup(); });
+  popupContinue.addEventListener('click', function(){
+    window.open(LINK_TIEP_TUC, '_blank');
+    closePopup();
+  });
+
+  /* ===== KHÓA SCROLL KHI POPUP/BẢNG MỞ ===== */
+  const obs = new MutationObserver(function(){
+    const anyOpen = overlay.classList.contains('show') || notifPanel.classList.contains('show');
+    document.body.style.overflow = anyOpen ? 'hidden' : '';
+  });
+  obs.observe(overlay, { attributes:true, attributeFilter:['class'] });
+  obs.observe(notifPanel, { attributes:true, attributeFilter:['class'] });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape'){ closePopup(); closePanel(); }
+  });
+})();
+</script>
+
+</body>
+</html>
